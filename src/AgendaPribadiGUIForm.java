@@ -1,11 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
 /**
  *
- * @author Asus
+ * @author 
  */
 public class AgendaPribadiGUIForm extends javax.swing.JFrame {
 
@@ -14,7 +10,11 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
      */
     public AgendaPribadiGUIForm() {
         initComponents();
+        
     }
+    
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,214 +27,135 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
         lblDayNight = new javax.swing.JLabel();
         lblDay = new javax.swing.JLabel();
-        lblDate = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        icoClock = new javax.swing.JLabel();
-        icoGraph = new javax.swing.JLabel();
+        lblDatePlaceholder = new javax.swing.JLabel();
+        icoLock = new javax.swing.JLabel();
+        Button_Heart = new javax.swing.JLabel();
+        icoClock2 = new javax.swing.JLabel();
         icoSearch = new javax.swing.JLabel();
         icoCalendar = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
-        jTextField8 = new javax.swing.JTextField();
-        jTextField9 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
-        jButton1.setFont(new java.awt.Font("Montserrat SemiBold", 0, 18)); // NOI18N
-        jButton1.setText("+");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        jPanel1.setPreferredSize(new java.awt.Dimension(290, 480));
+        jPanel1.setLayout(null);
 
-        lblDayNight.setFont(new java.awt.Font("Montserrat SemiBold", 0, 14)); // NOI18N
+        lblDayNight.setFont(new java.awt.Font("Montserrat SemiBold", 1, 18)); // NOI18N
+        lblDayNight.setForeground(new java.awt.Color(255, 255, 255));
         lblDayNight.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblDayNight.setText("Good Morning / Night !");
+        lblDayNight.setText("Good Morning!");
+        jPanel1.add(lblDayNight);
+        lblDayNight.setBounds(110, 140, 170, 23);
 
         lblDay.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
+        lblDay.setForeground(new java.awt.Color(255, 255, 255));
         lblDay.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblDay.setText("DayPlaceholder");
+        jPanel1.add(lblDay);
+        lblDay.setBounds(170, 170, 110, 15);
 
-        lblDate.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
-        lblDate.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblDate.setText("DatePlaceholder");
+        lblDatePlaceholder.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
+        lblDatePlaceholder.setForeground(new java.awt.Color(255, 255, 255));
+        lblDatePlaceholder.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblDatePlaceholder.setText("DatePlaceholder");
+        jPanel1.add(lblDatePlaceholder);
+        lblDatePlaceholder.setBounds(160, 190, 120, 15);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(140, Short.MAX_VALUE)
-                        .addComponent(lblDayNight))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDay, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblDate, javax.swing.GroupLayout.Alignment.TRAILING))))
-                .addGap(16, 16, 16))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblDayNight)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lblDay)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblDate)))
-                .addGap(38, 38, 38))
-        );
+        icoLock.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\heart-lock.png")); // NOI18N
+        icoLock.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel1.add(icoLock);
+        icoLock.setBounds(60, 20, 30, 30);
+
+        Button_Heart.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Button_Heart.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\heart_button2.png")); // NOI18N
+        Button_Heart.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        Button_Heart.setPreferredSize(new java.awt.Dimension(75, 74));
+        jPanel1.add(Button_Heart);
+        Button_Heart.setBounds(30, 100, 100, 74);
+
+        icoClock2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\heart-clock.png")); // NOI18N
+        icoClock2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel1.add(icoClock2);
+        icoClock2.setBounds(20, 20, 30, 30);
+
+        icoSearch.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\search-heart.png")); // NOI18N
+        jPanel1.add(icoSearch);
+        icoSearch.setBounds(200, 20, 30, 30);
+
+        icoCalendar.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\calendar-heart thin.png")); // NOI18N
+        icoCalendar.setText("icoCal");
+        jPanel1.add(icoCalendar);
+        icoCalendar.setBounds(240, 20, 30, 30);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("jLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(9, 0, 9, 14);
+        jPanel2.add(jLabel1, gridBagConstraints);
+
+        jLabel2.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
+        jLabel2.setText("jLabel2");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(9, 11, 9, 9);
+        jPanel2.add(jLabel2, gridBagConstraints);
+
+        jLabel3.setText("jLabel3");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(9, 54, 9, 0);
+        jPanel2.add(jLabel3, gridBagConstraints);
+
+        jLabel4.setText("jLabel4");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(9, 54, 9, 0);
+        jPanel2.add(jLabel4, gridBagConstraints);
+
+        jPanel1.add(jPanel2);
+        jPanel2.setBounds(20, 230, 250, 60);
+
+        backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\background2.png")); // NOI18N
+        backgroundLabel.setText("jLabel3");
+        backgroundLabel.setMaximumSize(new java.awt.Dimension(340, 495));
+        backgroundLabel.setMinimumSize(new java.awt.Dimension(340, 495));
+        jPanel1.add(backgroundLabel);
+        backgroundLabel.setBounds(0, 0, 290, 480);
+        backgroundLabel.getAccessibleContext().setAccessibleName("");
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
-
-        icoClock.setText("icoClock");
-
-        icoGraph.setText("icoGraph");
-
-        icoSearch.setText("icoSearch");
-
-        icoCalendar.setText("icoCal");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(icoClock)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(icoGraph)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
-                .addComponent(icoSearch)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(icoCalendar)
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(icoClock)
-                    .addComponent(icoGraph)
-                    .addComponent(icoSearch)
-                    .addComponent(icoCalendar))
-                .addGap(9, 9, 9))
-        );
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
-
-        jPanel3.setLayout(new java.awt.GridBagLayout());
-
-        jTextField1.setText("______________________________________");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField1, gridBagConstraints);
-
-        jTextField2.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField2, gridBagConstraints);
-
-        jTextField3.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField3, gridBagConstraints);
-
-        jTextField4.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField4, gridBagConstraints);
-
-        jTextField5.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField5, gridBagConstraints);
-
-        jTextField6.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField6, gridBagConstraints);
-
-        jTextField7.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField7, gridBagConstraints);
-
-        jTextField8.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField8, gridBagConstraints);
-
-        jTextField9.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel3.add(jTextField9, gridBagConstraints);
-
-        jTextField10.setText("______________________________________");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 0);
-        jPanel3.add(jTextField10, gridBagConstraints);
-
-        getContentPane().add(jPanel3, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
+        
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
@@ -266,25 +187,19 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Button_Heart;
+    private javax.swing.JLabel backgroundLabel;
     private javax.swing.JLabel icoCalendar;
-    private javax.swing.JLabel icoClock;
-    private javax.swing.JLabel icoGraph;
+    private javax.swing.JLabel icoClock2;
+    private javax.swing.JLabel icoLock;
     private javax.swing.JLabel icoSearch;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
-    private javax.swing.JLabel lblDate;
+    private javax.swing.JLabel lblDatePlaceholder;
     private javax.swing.JLabel lblDay;
     private javax.swing.JLabel lblDayNight;
     // End of variables declaration//GEN-END:variables
