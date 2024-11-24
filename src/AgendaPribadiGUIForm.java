@@ -15,9 +15,15 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-
+/**
+ *
+ * @author 
+ */
 public class AgendaPribadiGUIForm extends javax.swing.JFrame {
 
+    /**
+     * Creates new form AgendaPribadiGUIForm
+     */
     public AgendaPribadiGUIForm() {
         initComponents();
         refreshAgendaList();
@@ -26,12 +32,6 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         bgDayNight();
         
     }
-    private void openEditForm(String day, String month, String description, String time) {
-    EditForm inputForm = new EditForm(day, month, description, time); // Pass existing data
-    inputForm.setVisible(true);
-    this.dispose(); // Close the main form if needed
-    }
-    
    private RoundedPanel createAgendaPanel(String day, String month, String description, String time) {
     // Create a RoundedPanel with a radius of 20 and set its layout
     RoundedPanel agendaPanel = new RoundedPanel(20);
@@ -62,7 +62,7 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
     return agendaPanel;
 }
     
-   private void refreshAgendaList() {
+  private void refreshAgendaList() {
     pnlAgendaList.removeAll(); // Clear the existing list
 
     try (Connection conn = new DatabaseHelper().getConnection();
@@ -70,23 +70,54 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
          ResultSet rs = stmt.executeQuery("SELECT * FROM agenda")) {
 
         while (rs.next()) {
-            String day = rs.getString("day");         // Extract day from the database
-            String month = rs.getString("month");     // Extract month (short form)
+            String date = rs.getString("date");
             String description = rs.getString("description");
-            String time = rs.getString("time") + " " + rs.getString("ampm");
+            String time = rs.getString("time");
+            String ampm = rs.getString("ampm");
 
-            // Create a new agenda panel
-            RoundedPanel agendaPanel = createAgendaPanel(day, month, description, time);
+            // Create a rounded panel for each agenda
+            RoundedPanel agendaPanel = new RoundedPanel(20); // Use your custom RoundedPanel class
+            agendaPanel.setLayout(new BorderLayout());
+            agendaPanel.setBackground(new Color(255, 255, 255, 200)); // Slightly transparent white
+            agendaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            // Add click listener to open edit form
+            // Add content to the rounded panel
+            JLabel lblDayDate = new JLabel("<html><b>" + date + "</b></html>");
+            lblDayDate.setForeground(Color.DARK_GRAY);
+            lblDayDate.setHorizontalAlignment(JLabel.CENTER);
+
+            JLabel lblDesc = new JLabel("<html><i>" + description + "</i></html>");
+            lblDesc.setForeground(Color.BLACK);
+            lblDesc.setHorizontalAlignment(JLabel.CENTER);
+
+            JLabel lblTime = new JLabel(time + " " + ampm);
+            lblTime.setForeground(Color.GRAY);
+            lblTime.setHorizontalAlignment(JLabel.CENTER);
+
+            // Add labels to the agenda panel
+            agendaPanel.add(lblDayDate, BorderLayout.NORTH);
+            agendaPanel.add(lblDesc, BorderLayout.CENTER);
+            agendaPanel.add(lblTime, BorderLayout.SOUTH);
+
+            // Add MouseListener to handle click events
             agendaPanel.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
-                    openEditForm(day, month, description, time); // Pass data to edit form
+                    openEditForm(date, description, time, ampm); // Open the EditForm with agenda details
+                }
+
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    agendaPanel.setBackground(new Color(230, 230, 230)); // Optional: Highlight on hover
+                }
+
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    agendaPanel.setBackground(new Color(255, 255, 255, 200)); // Reset background on exit
                 }
             });
 
-            // Add the agenda panel to the list
+            // Add agenda panel to the list
             pnlAgendaList.add(agendaPanel);
         }
 
@@ -97,7 +128,21 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         e.printStackTrace();
     }
 }
+   // Method to open EditForm with agenda data
+    private void openEditForm(String date, String description, String time, String ampm) {
+    try {
+        // Convert date to the required format
+        LocalDate parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy")); // Adjust pattern to match your database format
+        String formattedDate = parsedDate.toString(); // Convert to yyyy-MM-dd
 
+        // Pass formattedDate to the EditForm
+        EditForm editForm = new EditForm(formattedDate, description, time, ampm);
+        editForm.setVisible(true);
+        this.dispose(); // Close the main form
+    } catch (Exception e) {
+        e.printStackTrace(); // Log the error for debugging
+    }
+}
 private void updateGreeting() {
     LocalTime now = LocalTime.now();
     int hour = now.getHour();

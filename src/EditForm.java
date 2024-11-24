@@ -1,38 +1,94 @@
-
-import java.util.Calendar;
-import java.util.Date;
+import java.sql.Connection;
+import java.sql.PreparedStatement; // Import PreparedStatement
+import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
  * @author 
  */
 public class EditForm extends javax.swing.JFrame {
-    private final String day;
-    private final String month;
-    private final String description;
-    private final String time;
+
     /**
      * Creates new form AgendaPribadiGUIForm
-     * @param day
-     * @param month
+     * @param date
      * @param description
      * @param time
+     * @param ampm
      */
-    public EditForm(String day, String month, String description, String time) {
+    public EditForm(String date, String description, String time, String ampm) {
+        java.sql.Date sqlDate = java.sql.Date.valueOf(date); // Ensure this uses yyyy-MM-dd   
         initComponents();
-        this.day = day;
-        this.month = month;
-        this.description = description;
-        this.time = time;
+    jCalendar.setDate(java.sql.Date.valueOf(date)); // Assuming you use JDateChooser
+    txtAgenda.setText(description);
+    txtTime.setText(time);
+    cbbTime.setSelectedItem(ampm);
+    
+    btnEdit.addActionListener(evt -> editAgenda(date)); // Pass the original date as identifier
+    btnDel.addActionListener(evt -> deleteAgenda(date)); // Pass the original date as identifier
     }
     
-    private void backMethod(){
-    AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
-    mainForm.setVisible(true);
-    this.dispose(); // Close the input form
+    private void editAgenda(String originalDate) {
+        try (Connection conn = new DatabaseHelper().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                 "UPDATE agenda SET date = ?, description = ?, time = ?, ampm = ? WHERE date = ?")) {
+
+            // Retrieve the date selected in JCalendar
+            java.util.Date selectedDate = jCalendar.getDate();
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "Please select a valid date.");
+                return;
+            }
+            java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+
+            pstmt.setDate(1, sqlDate);
+            pstmt.setString(2, txtAgenda.getText());
+            pstmt.setString(3, txtTime.getText());
+            pstmt.setString(4, cbbTime.getSelectedItem().toString());
+            pstmt.setString(5, originalDate);
+
+            int rows = pstmt.executeUpdate();
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "Agenda updated successfully!");
+                redirectToMainForm(); // Go back to the main form
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to update agenda.");
+        }
     }
 
+    private void deleteAgenda(String originalDate) {
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this agenda?");
+        if (confirm == JOptionPane.YES_OPTION) {
+            try (Connection conn = new DatabaseHelper().getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM agenda WHERE date = ?")) {
+
+                pstmt.setString(1, originalDate);
+
+                int rows = pstmt.executeUpdate();
+                if (rows > 0) {
+                    JOptionPane.showMessageDialog(this, "Agenda deleted successfully!");
+                    redirectToMainForm(); // Go back to the main form
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Failed to delete agenda.");
+            }
+        }
+    }
+
+    private void backMethod() {
+        AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
+        mainForm.setVisible(true);
+        this.dispose(); // Close the input form
+    }
+private void redirectToMainForm() {
+    AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
+    mainForm.setVisible(true);
+    this.dispose(); // Close the current form
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -47,10 +103,10 @@ public class EditForm extends javax.swing.JFrame {
         btnBack = new assets.HeartButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        btnDel = new assets.HeartButton();
         btnEdit = new assets.HeartButton();
-        lblDel = new javax.swing.JLabel();
+        btnDel = new assets.HeartButton();
         lblEdit = new javax.swing.JLabel();
+        lblDel = new javax.swing.JLabel();
         roundedPanel2 = new assets.RoundedPanel();
         jLabel4 = new javax.swing.JLabel();
         txtTime = new javax.swing.JTextField();
@@ -86,39 +142,25 @@ public class EditForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Montserrat Medium", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 102, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Edit Your Agenda Here!");
+        jLabel1.setText("Add Your Agenda Here!");
         jPanel1.add(jLabel1);
         jLabel1.setBounds(40, 70, 260, 23);
 
-        btnDel.setText("");
-        btnDel.setFont(new java.awt.Font("Montserrat SemiBold", 0, 24)); // NOI18N
-        btnDel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDelActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnDel);
-        btnDel.setBounds(100, 370, 60, 50);
-
         btnEdit.setText("");
-        btnEdit.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
-            }
-        });
         jPanel1.add(btnEdit);
-        btnEdit.setBounds(210, 370, 60, 50);
+        btnEdit.setBounds(200, 380, 60, 50);
 
-        lblDel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblDel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\trash.png")); // NOI18N
-        jPanel1.add(lblDel);
-        lblDel.setBounds(100, 380, 60, 40);
+        btnDel.setText("");
+        jPanel1.add(btnDel);
+        btnDel.setBounds(80, 380, 60, 50);
 
-        lblEdit.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblEdit.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\edit.png")); // NOI18N
         jPanel1.add(lblEdit);
-        lblEdit.setBounds(210, 380, 60, 40);
+        lblEdit.setBounds(220, 390, 40, 40);
+
+        lblDel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\trash.png")); // NOI18N
+        jPanel1.add(lblDel);
+        lblDel.setBounds(80, 390, 60, 40);
 
         jLabel4.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
         jLabel4.setText("Enter Time :");
@@ -207,57 +249,6 @@ public class EditForm extends javax.swing.JFrame {
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         backMethod();
     }//GEN-LAST:event_btnBackActionPerformed
-
-    private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
-        btnDel.addActionListener(e -> {
-    if (txtAgenda.getText().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nothing to delete", "Warning", JOptionPane.WARNING_MESSAGE);
-    } else {
-        // Clear fields
-        jCalendar.setDate(null);
-        txtAgenda.setText("");
-        txtTime.setText("");
-    }
-});
-    }//GEN-LAST:event_btnDelActionPerformed
-
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-           // Validate and fetch date
-    Date selectedDate = jCalendar.getDate();
-    if (selectedDate == null) {
-        JOptionPane.showMessageDialog(this, "Please select a date.", "Warning", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(selectedDate);
-    int day = calendar.get(Calendar.DAY_OF_MONTH);
-    int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based
-
-    // Validate and fetch time
-    String time = txtTime.getText().trim();
-    String ampm = (String) cbbTime.getSelectedItem();
-    if (time.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please enter a time.", "Warning", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Validate and fetch agenda description
-    String description = txtAgenda.getText().trim();
-    if (description.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please enter an agenda description.", "Warning", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Print extracted values (or use them as needed)
-    System.out.println("Day: " + day);
-    System.out.println("Month: " + month);
-    System.out.println("Time: " + time + " " + ampm);
-    System.out.println("Agenda: " + description);
-
-            
-            
-    }//GEN-LAST:event_btnEditActionPerformed
 
     
     /**
