@@ -3,9 +3,13 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class DatabaseHelper {
-    private static final String DB_URL = "jdbc:sqlite:src/database/agenda.db"; // Your SQLite database file
+    private static final String DATABASE_URL = "jdbc:sqlite:src/database/agenda.db"; // SQLite file name
 
-    public static void createTable() {
+    public DatabaseHelper() {
+        createTable(); // Automatically create the table when the helper is initialized
+    }
+
+    private void createTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS agenda ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "date TEXT NOT NULL, "
@@ -14,13 +18,17 @@ public class DatabaseHelper {
                 + "ampm TEXT NOT NULL"
                 + ");";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
              Statement stmt = conn.createStatement()) {
 
-            stmt.execute(createTableSQL);
-            System.out.println("Table 'agenda' created or already exists!");
+            stmt.execute(createTableSQL); // Execute the table creation query
+            System.out.println("Table 'agenda' is ready!");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection() throws Exception {
+        return DriverManager.getConnection(DATABASE_URL);
     }
 }

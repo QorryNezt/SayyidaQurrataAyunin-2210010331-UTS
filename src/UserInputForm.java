@@ -1,9 +1,7 @@
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.Locale;
+import java.sql.Connection;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author 
@@ -18,6 +16,11 @@ public class UserInputForm extends javax.swing.JFrame {
        
     }
     
+    private void backMethod(){
+    AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
+    mainForm.setVisible(true);
+    this.dispose(); // Close the input form
+    }
 
 
     /**
@@ -53,9 +56,11 @@ public class UserInputForm extends javax.swing.JFrame {
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(350, 480));
+        setMinimumSize(new java.awt.Dimension(350, 480));
         setResizable(false);
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(290, 480));
+        jPanel1.setPreferredSize(new java.awt.Dimension(350, 480));
         jPanel1.setLayout(null);
 
         btnBack.setText("");
@@ -212,9 +217,7 @@ public class UserInputForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
-        mainForm.setVisible(true);
-        this.dispose(); // Close the input form
+        backMethod();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
@@ -231,11 +234,38 @@ public class UserInputForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDelActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-         if (jCalendar.getDate() == null || txtAgenda.getText().isEmpty() || txtTime.getText().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please fill all fields", "Warning", JOptionPane.WARNING_MESSAGE);
-    } else {
-        
+    // Get user input
+    String date = jCalendar.getDate().toString(); // Assuming you're using JCalendar
+    String description = txtAgenda.getText();
+    String time = txtTime.getText();
+    String ampm = cbbTime.getSelectedItem().toString();
+
+    // Validate input
+    if (date.isEmpty() || description.isEmpty() || time.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields must be filled!", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
     }
+
+    // Insert into database
+    try (Connection conn = new DatabaseHelper().getConnection();
+         Statement stmt = conn.createStatement()) {
+
+        String insertSQL = "INSERT INTO agenda (date, description, time, ampm) VALUES ('"
+                + date + "', '"
+                + description + "', '"
+                + time + "', '"
+                + ampm + "');";
+        stmt.executeUpdate(insertSQL);
+        JOptionPane.showMessageDialog(this, "Agenda added successfully!");
+
+        // Kembali ke halaman main
+        backMethod();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Failed to add agenda!", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
     }//GEN-LAST:event_btnAddActionPerformed
 
     

@@ -1,8 +1,18 @@
+import assets.RoundedPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Locale;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
 /**
  *
  * @author 
@@ -14,10 +24,59 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
      */
     public AgendaPribadiGUIForm() {
         initComponents();
+        refreshAgendaList();
         updateDateAndDay();
         updateGreeting();
+        bgDayNight();
     }
-    
+   private void refreshAgendaList() {
+    pnlAgendaList.removeAll(); // Clear the existing list
+
+    try (Connection conn = new DatabaseHelper().getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery("SELECT * FROM agenda")) {
+
+        while (rs.next()) {
+            String date = rs.getString("date");
+            String description = rs.getString("description");
+            String time = rs.getString("time");
+            String ampm = rs.getString("ampm");
+
+            // Create a rounded panel for each agenda
+            RoundedPanel agendaPanel = new RoundedPanel(20); // Use your custom RoundedPanel class
+            agendaPanel.setLayout(new BorderLayout());
+            agendaPanel.setBackground(new Color(255, 255, 255, 200)); // Slightly transparent white
+            agendaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            // Add content to the rounded panel
+            JLabel lblDayDate = new JLabel("<html><b>" + date + "</b></html>");
+            lblDayDate.setForeground(Color.DARK_GRAY);
+            lblDayDate.setHorizontalAlignment(JLabel.CENTER);
+
+            JLabel lblDesc = new JLabel("<html><i>" + description + "</i></html>");
+            lblDesc.setForeground(Color.BLACK);
+            lblDesc.setHorizontalAlignment(JLabel.CENTER);
+
+            JLabel lblTime = new JLabel(time + " " + ampm);
+            lblTime.setForeground(Color.GRAY);
+            lblTime.setHorizontalAlignment(JLabel.CENTER);
+
+            // Add labels to the agenda panel
+            agendaPanel.add(lblDayDate, BorderLayout.NORTH);
+            agendaPanel.add(lblDesc, BorderLayout.CENTER);
+            agendaPanel.add(lblTime, BorderLayout.SOUTH);
+
+            // Add agenda panel to the list
+            pnlAgendaList.add(agendaPanel);
+        }
+
+        pnlAgendaList.revalidate();
+        pnlAgendaList.repaint();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 private void updateGreeting() {
     LocalTime now = LocalTime.now();
     int hour = now.getHour();
@@ -28,7 +87,7 @@ private void updateGreeting() {
     } else if (hour >= 12 && hour < 18) {
         greeting = "Good Afternoon!";
     } else {
-        greeting = "Good Night!";
+        greeting = "Good Evening!";
     }
 
     lblGreeting.setText(greeting);
@@ -46,6 +105,14 @@ private void updateDateAndDay() {
     lblDatePlaceholder.setText(date);
 }
 
+private void bgDayNight() {
+    int hour = LocalTime.now().getHour();
+    if (hour >= 6 && hour < 18) { // Morning/Afternoon
+        backgroundLabel.setIcon(new ImageIcon("assets/day_bg.png"));
+    } else { // Evening/Night
+        backgroundLabel.setIcon(new ImageIcon("assets/night_bg.png"));
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -65,15 +132,12 @@ private void updateDateAndDay() {
         icoClock2 = new javax.swing.JLabel();
         icoSearch = new javax.swing.JLabel();
         icoCalendar = new javax.swing.JLabel();
-        roundedPanel1 = new assets.RoundedPanel();
-        lblDesc = new javax.swing.JLabel();
-        icoWeather = new javax.swing.JLabel();
-        lblTime = new javax.swing.JLabel();
-        lblDayDate = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        pnlAgendaList = new assets.RoundedPanel();
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(350, 480));
+        setMinimumSize(new java.awt.Dimension(350, 480));
         setPreferredSize(new java.awt.Dimension(350, 480));
         setResizable(false);
 
@@ -132,60 +196,13 @@ private void updateDateAndDay() {
         jPanel1.add(icoCalendar);
         icoCalendar.setBounds(300, 20, 30, 30);
 
-        roundedPanel1.setLayout(new java.awt.GridBagLayout());
-
-        lblDesc.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
-        lblDesc.setText("Desc Goes Here");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 30);
-        roundedPanel1.add(lblDesc, gridBagConstraints);
-
-        icoWeather.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
-        icoWeather.setText("weather");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 8, 0);
-        roundedPanel1.add(icoWeather, gridBagConstraints);
-
-        lblTime.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
-        lblTime.setText("time");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 8, 0);
-        roundedPanel1.add(lblTime, gridBagConstraints);
-
-        lblDayDate.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
-        lblDayDate.setText("DD");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 26);
-        roundedPanel1.add(lblDayDate, gridBagConstraints);
-
-        jLabel2.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
-        jLabel2.setText("MMM");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 26);
-        roundedPanel1.add(jLabel2, gridBagConstraints);
-
-        jPanel1.add(roundedPanel1);
-        roundedPanel1.setBounds(10, 230, 330, 60);
+        pnlAgendaList.setLayout(new java.awt.GridBagLayout());
+        jPanel1.add(pnlAgendaList);
+        pnlAgendaList.setBounds(10, 230, 330, 60);
 
         backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\3.png")); // NOI18N
-        backgroundLabel.setMaximumSize(new java.awt.Dimension(340, 495));
-        backgroundLabel.setMinimumSize(new java.awt.Dimension(340, 495));
+        backgroundLabel.setMaximumSize(new java.awt.Dimension(350, 480));
+        backgroundLabel.setMinimumSize(new java.awt.Dimension(350, 480));
         jPanel1.add(backgroundLabel);
         backgroundLabel.setBounds(0, 0, 350, 480);
         backgroundLabel.getAccessibleContext().setAccessibleName("");
@@ -196,7 +213,9 @@ private void updateDateAndDay() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Button_HeartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Button_HeartMouseClicked
-        // TODO add your handling code here:
+    UserInputForm inputForm = new UserInputForm(); // Your input form class
+    inputForm.setVisible(true);
+    this.dispose(); // Close the main form
     }//GEN-LAST:event_Button_HeartMouseClicked
 
     
@@ -243,15 +262,10 @@ private void updateDateAndDay() {
     private javax.swing.JLabel icoClock2;
     private javax.swing.JLabel icoLock;
     private javax.swing.JLabel icoSearch;
-    private javax.swing.JLabel icoWeather;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblDatePlaceholder;
     private javax.swing.JLabel lblDay;
-    private javax.swing.JLabel lblDayDate;
-    private javax.swing.JLabel lblDesc;
     private javax.swing.JLabel lblGreeting;
-    private javax.swing.JLabel lblTime;
-    private assets.RoundedPanel roundedPanel1;
+    private assets.RoundedPanel pnlAgendaList;
     // End of variables declaration//GEN-END:variables
 }
