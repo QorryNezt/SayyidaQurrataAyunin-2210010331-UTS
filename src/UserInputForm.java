@@ -3,6 +3,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Locale;
+import javax.swing.JOptionPane;
 /**
  *
  * @author 
@@ -42,10 +43,10 @@ public class UserInputForm extends javax.swing.JFrame {
         roundedPanel2 = new assets.RoundedPanel();
         jLabel4 = new javax.swing.JLabel();
         txtTime = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbbTime = new javax.swing.JComboBox<>();
         roundedPanel1 = new assets.RoundedPanel();
         jLabel3 = new javax.swing.JLabel();
-        jCalendar1 = new com.toedter.calendar.JCalendar();
+        jCalendar = new com.toedter.calendar.JCalendar();
         roundedPanel3 = new assets.RoundedPanel();
         jLabel5 = new javax.swing.JLabel();
         txtAgenda = new javax.swing.JTextField();
@@ -81,11 +82,21 @@ public class UserInputForm extends javax.swing.JFrame {
 
         btnAdd.setText("");
         btnAdd.setFont(new java.awt.Font("Montserrat SemiBold", 0, 24)); // NOI18N
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnAdd);
         btnAdd.setBounds(40, 370, 60, 50);
 
         btnDel.setText("");
         btnDel.setFont(new java.awt.Font("Montserrat SemiBold", 0, 24)); // NOI18N
+        btnDel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDelActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnDel);
         btnDel.setBounds(140, 370, 60, 50);
 
@@ -114,8 +125,8 @@ public class UserInputForm extends javax.swing.JFrame {
 
         txtTime.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
 
-        jComboBox1.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AM", "PM" }));
+        cbbTime.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
+        cbbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AM", "PM" }));
 
         javax.swing.GroupLayout roundedPanel2Layout = new javax.swing.GroupLayout(roundedPanel2);
         roundedPanel2.setLayout(roundedPanel2Layout);
@@ -127,7 +138,7 @@ public class UserInputForm extends javax.swing.JFrame {
                 .addGap(29, 29, 29)
                 .addComponent(txtTime, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(cbbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         roundedPanel2Layout.setVerticalGroup(
             roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,7 +148,7 @@ public class UserInputForm extends javax.swing.JFrame {
                     .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel4))
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbbTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13))
         );
 
@@ -153,8 +164,8 @@ public class UserInputForm extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 14);
         roundedPanel1.add(jLabel3, gridBagConstraints);
 
-        jCalendar1.setFont(new java.awt.Font("Montserrat", 0, 10)); // NOI18N
-        roundedPanel1.add(jCalendar1, new java.awt.GridBagConstraints());
+        jCalendar.setFont(new java.awt.Font("Montserrat", 0, 10)); // NOI18N
+        roundedPanel1.add(jCalendar, new java.awt.GridBagConstraints());
 
         jPanel1.add(roundedPanel1);
         roundedPanel1.setBounds(20, 100, 310, 150);
@@ -201,8 +212,31 @@ public class UserInputForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        // TODO add your handling code here:
+        AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
+        mainForm.setVisible(true);
+        this.dispose(); // Close the input form
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
+        btnDel.addActionListener(e -> {
+    if (txtAgenda.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Nothing to delete", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Clear fields
+        jCalendar.setDate(null);
+        txtAgenda.setText("");
+        txtTime.setText("");
+    }
+});
+    }//GEN-LAST:event_btnDelActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+         if (jCalendar.getDate() == null || txtAgenda.getText().isEmpty() || txtTime.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill all fields", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else {
+        
+    }
+    }//GEN-LAST:event_btnAddActionPerformed
 
     
     /**
@@ -247,8 +281,8 @@ public class UserInputForm extends javax.swing.JFrame {
     private assets.HeartButton btnBack;
     private assets.HeartButton btnDel;
     private assets.HeartButton btnEdit;
-    private com.toedter.calendar.JCalendar jCalendar1;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbbTime;
+    private com.toedter.calendar.JCalendar jCalendar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
