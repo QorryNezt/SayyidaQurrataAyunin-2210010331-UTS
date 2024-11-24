@@ -1,4 +1,8 @@
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.Locale;
 /**
  *
  * @author 
@@ -10,11 +14,37 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
      */
     public AgendaPribadiGUIForm() {
         initComponents();
-        
+        updateDateAndDay();
+        updateGreeting();
     }
     
+private void updateGreeting() {
+    LocalTime now = LocalTime.now();
+    int hour = now.getHour();
+    String greeting;
 
+    if (hour >= 5 && hour < 12) {
+        greeting = "Good Morning!";
+    } else if (hour >= 12 && hour < 18) {
+        greeting = "Good Afternoon!";
+    } else {
+        greeting = "Good Night!";
+    }
 
+    lblGreeting.setText(greeting);
+}
+private void updateDateAndDay() {
+    LocalDate today = LocalDate.now();
+    DayOfWeek dayOfWeek = today.getDayOfWeek();
+
+    // Format Day and Date
+    String day = dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH);
+    String date = today.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ENGLISH));
+
+    // Update Labels
+    lblDay.setText("Today is " + day);
+    lblDatePlaceholder.setText(date);
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,7 +57,7 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
-        lblDayNight = new javax.swing.JLabel();
+        lblGreeting = new javax.swing.JLabel();
         lblDay = new javax.swing.JLabel();
         lblDatePlaceholder = new javax.swing.JLabel();
         icoLock = new javax.swing.JLabel();
@@ -35,39 +65,41 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         icoClock2 = new javax.swing.JLabel();
         icoSearch = new javax.swing.JLabel();
         icoCalendar = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        roundedPanel1 = new assets.RoundedPanel();
+        lblDesc = new javax.swing.JLabel();
+        icoWeather = new javax.swing.JLabel();
+        lblTime = new javax.swing.JLabel();
+        lblDayDate = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(350, 480));
         setResizable(false);
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(290, 480));
+        jPanel1.setPreferredSize(new java.awt.Dimension(350, 480));
         jPanel1.setLayout(null);
 
-        lblDayNight.setFont(new java.awt.Font("Montserrat SemiBold", 1, 18)); // NOI18N
-        lblDayNight.setForeground(new java.awt.Color(255, 255, 255));
-        lblDayNight.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        lblDayNight.setText("Good Morning!");
-        jPanel1.add(lblDayNight);
-        lblDayNight.setBounds(110, 140, 170, 23);
+        lblGreeting.setFont(new java.awt.Font("Montserrat SemiBold", 1, 18)); // NOI18N
+        lblGreeting.setForeground(new java.awt.Color(255, 255, 255));
+        lblGreeting.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblGreeting.setText("Good Morning!");
+        jPanel1.add(lblGreeting);
+        lblGreeting.setBounds(170, 140, 170, 23);
 
         lblDay.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
         lblDay.setForeground(new java.awt.Color(255, 255, 255));
         lblDay.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblDay.setText("DayPlaceholder");
         jPanel1.add(lblDay);
-        lblDay.setBounds(170, 170, 110, 15);
+        lblDay.setBounds(230, 170, 110, 15);
 
         lblDatePlaceholder.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
         lblDatePlaceholder.setForeground(new java.awt.Color(255, 255, 255));
         lblDatePlaceholder.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblDatePlaceholder.setText("DatePlaceholder");
         jPanel1.add(lblDatePlaceholder);
-        lblDatePlaceholder.setBounds(160, 190, 120, 15);
+        lblDatePlaceholder.setBounds(220, 190, 120, 15);
 
         icoLock.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\heart-lock.png")); // NOI18N
         icoLock.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -78,8 +110,13 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         Button_Heart.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\heart_button2.png")); // NOI18N
         Button_Heart.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         Button_Heart.setPreferredSize(new java.awt.Dimension(75, 74));
+        Button_Heart.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Button_HeartMouseClicked(evt);
+            }
+        });
         jPanel1.add(Button_Heart);
-        Button_Heart.setBounds(30, 100, 100, 74);
+        Button_Heart.setBounds(40, 100, 110, 80);
 
         icoClock2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\heart-clock.png")); // NOI18N
         icoClock2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -88,66 +125,79 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
 
         icoSearch.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\search-heart.png")); // NOI18N
         jPanel1.add(icoSearch);
-        icoSearch.setBounds(200, 20, 30, 30);
+        icoSearch.setBounds(260, 20, 30, 30);
 
         icoCalendar.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\calendar-heart thin.png")); // NOI18N
         icoCalendar.setText("icoCal");
         jPanel1.add(icoCalendar);
-        icoCalendar.setBounds(240, 20, 30, 30);
+        icoCalendar.setBounds(300, 20, 30, 30);
 
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        roundedPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("jLabel1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(9, 0, 9, 14);
-        jPanel2.add(jLabel1, gridBagConstraints);
-
-        jLabel2.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
-        jLabel2.setText("jLabel2");
+        lblDesc.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
+        lblDesc.setText("Desc Goes Here");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(9, 11, 9, 9);
-        jPanel2.add(jLabel2, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 30);
+        roundedPanel1.add(lblDesc, gridBagConstraints);
 
-        jLabel3.setText("jLabel3");
+        icoWeather.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
+        icoWeather.setText("weather");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(9, 54, 9, 0);
-        jPanel2.add(jLabel3, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 8, 0);
+        roundedPanel1.add(icoWeather, gridBagConstraints);
 
-        jLabel4.setText("jLabel4");
+        lblTime.setFont(new java.awt.Font("Montserrat Medium", 0, 12)); // NOI18N
+        lblTime.setText("time");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(9, 54, 9, 0);
-        jPanel2.add(jLabel4, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 8, 0);
+        roundedPanel1.add(lblTime, gridBagConstraints);
 
-        jPanel1.add(jPanel2);
-        jPanel2.setBounds(20, 230, 250, 60);
+        lblDayDate.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
+        lblDayDate.setText("DD");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 26);
+        roundedPanel1.add(lblDayDate, gridBagConstraints);
 
-        backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\background2.png")); // NOI18N
-        backgroundLabel.setText("jLabel3");
+        jLabel2.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
+        jLabel2.setText("MMM");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 26);
+        roundedPanel1.add(jLabel2, gridBagConstraints);
+
+        jPanel1.add(roundedPanel1);
+        roundedPanel1.setBounds(10, 230, 330, 60);
+
+        backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\3.png")); // NOI18N
         backgroundLabel.setMaximumSize(new java.awt.Dimension(340, 495));
         backgroundLabel.setMinimumSize(new java.awt.Dimension(340, 495));
         jPanel1.add(backgroundLabel);
-        backgroundLabel.setBounds(0, 0, 290, 480);
+        backgroundLabel.setBounds(0, 0, 350, 480);
         backgroundLabel.getAccessibleContext().setAccessibleName("");
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void Button_HeartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Button_HeartMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Button_HeartMouseClicked
 
     
     /**
@@ -193,14 +243,15 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
     private javax.swing.JLabel icoClock2;
     private javax.swing.JLabel icoLock;
     private javax.swing.JLabel icoSearch;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel icoWeather;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblDatePlaceholder;
     private javax.swing.JLabel lblDay;
-    private javax.swing.JLabel lblDayNight;
+    private javax.swing.JLabel lblDayDate;
+    private javax.swing.JLabel lblDesc;
+    private javax.swing.JLabel lblGreeting;
+    private javax.swing.JLabel lblTime;
+    private assets.RoundedPanel roundedPanel1;
     // End of variables declaration//GEN-END:variables
 }
