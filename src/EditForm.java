@@ -1,19 +1,30 @@
-import java.sql.Connection;
-import java.sql.Statement;
+
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author 
  */
-public class UserInputForm extends javax.swing.JFrame {
-
+public class EditForm extends javax.swing.JFrame {
+    private final String day;
+    private final String month;
+    private final String description;
+    private final String time;
     /**
      * Creates new form AgendaPribadiGUIForm
+     * @param day
+     * @param month
+     * @param description
+     * @param time
      */
-    public UserInputForm() {
+    public EditForm(String day, String month, String description, String time) {
         initComponents();
-       
+        this.day = day;
+        this.month = month;
+        this.description = description;
+        this.time = time;
     }
     
     private void backMethod(){
@@ -31,14 +42,15 @@ public class UserInputForm extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
         btnBack = new assets.HeartButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        btnAdd = new assets.HeartButton();
-        lblAdd = new javax.swing.JLabel();
+        btnDel = new assets.HeartButton();
+        btnEdit = new assets.HeartButton();
+        lblDel = new javax.swing.JLabel();
+        lblEdit = new javax.swing.JLabel();
         roundedPanel2 = new assets.RoundedPanel();
         jLabel4 = new javax.swing.JLabel();
         txtTime = new javax.swing.JTextField();
@@ -51,7 +63,6 @@ public class UserInputForm extends javax.swing.JFrame {
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(350, 480));
         setMinimumSize(new java.awt.Dimension(350, 480));
 
         jPanel1.setPreferredSize(new java.awt.Dimension(350, 480));
@@ -75,24 +86,39 @@ public class UserInputForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Montserrat Medium", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 102, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Add Your Agenda Here!");
+        jLabel1.setText("Edit Your Agenda Here!");
         jPanel1.add(jLabel1);
         jLabel1.setBounds(40, 70, 260, 23);
 
-        btnAdd.setText("");
-        btnAdd.setFont(new java.awt.Font("Montserrat SemiBold", 0, 24)); // NOI18N
-        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+        btnDel.setText("");
+        btnDel.setFont(new java.awt.Font("Montserrat SemiBold", 0, 24)); // NOI18N
+        btnDel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddActionPerformed(evt);
+                btnDelActionPerformed(evt);
             }
         });
-        jPanel1.add(btnAdd);
-        btnAdd.setBounds(150, 370, 60, 50);
+        jPanel1.add(btnDel);
+        btnDel.setBounds(100, 370, 60, 50);
 
-        lblAdd.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblAdd.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\add.png")); // NOI18N
-        jPanel1.add(lblAdd);
-        lblAdd.setBounds(160, 380, 40, 40);
+        btnEdit.setText("");
+        btnEdit.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnEdit);
+        btnEdit.setBounds(210, 370, 60, 50);
+
+        lblDel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblDel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\trash.png")); // NOI18N
+        jPanel1.add(lblDel);
+        lblDel.setBounds(100, 380, 60, 40);
+
+        lblEdit.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblEdit.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\edit.png")); // NOI18N
+        jPanel1.add(lblEdit);
+        lblEdit.setBounds(210, 380, 60, 40);
 
         jLabel4.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
         jLabel4.setText("Enter Time :");
@@ -182,40 +208,56 @@ public class UserInputForm extends javax.swing.JFrame {
         backMethod();
     }//GEN-LAST:event_btnBackActionPerformed
 
-    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-    // Get user input
-    String date = jCalendar.getDate().toString(); // Assuming you're using JCalendar
-    String description = txtAgenda.getText();
-    String time = txtTime.getText();
-    String ampm = cbbTime.getSelectedItem().toString();
+    private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
+        btnDel.addActionListener(e -> {
+    if (txtAgenda.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Nothing to delete", "Warning", JOptionPane.WARNING_MESSAGE);
+    } else {
+        // Clear fields
+        jCalendar.setDate(null);
+        txtAgenda.setText("");
+        txtTime.setText("");
+    }
+});
+    }//GEN-LAST:event_btnDelActionPerformed
 
-    // Validate input
-    if (date.isEmpty() || description.isEmpty() || time.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "All fields must be filled!", "Warning", JOptionPane.WARNING_MESSAGE);
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+           // Validate and fetch date
+    Date selectedDate = jCalendar.getDate();
+    if (selectedDate == null) {
+        JOptionPane.showMessageDialog(this, "Please select a date.", "Warning", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    // Insert into database
-    try (Connection conn = new DatabaseHelper().getConnection();
-         Statement stmt = conn.createStatement()) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(selectedDate);
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+    int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based
 
-        String insertSQL = "INSERT INTO agenda (date, description, time, ampm) VALUES ('"
-                + date + "', '"
-                + description + "', '"
-                + time + "', '"
-                + ampm + "');";
-        stmt.executeUpdate(insertSQL);
-        JOptionPane.showMessageDialog(this, "Agenda added successfully!");
-
-        // Kembali ke halaman main
-        backMethod();
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Failed to add agenda!", "Error", JOptionPane.ERROR_MESSAGE);
+    // Validate and fetch time
+    String time = txtTime.getText().trim();
+    String ampm = (String) cbbTime.getSelectedItem();
+    if (time.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a time.", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
     }
 
-    }//GEN-LAST:event_btnAddActionPerformed
+    // Validate and fetch agenda description
+    String description = txtAgenda.getText().trim();
+    if (description.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter an agenda description.", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Print extracted values (or use them as needed)
+    System.out.println("Day: " + day);
+    System.out.println("Month: " + month);
+    System.out.println("Time: " + time + " " + ampm);
+    System.out.println("Agenda: " + description);
+
+            
+            
+    }//GEN-LAST:event_btnEditActionPerformed
 
     
     /**
@@ -256,8 +298,9 @@ public class UserInputForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundLabel;
-    private assets.HeartButton btnAdd;
     private assets.HeartButton btnBack;
+    private assets.HeartButton btnDel;
+    private assets.HeartButton btnEdit;
     private javax.swing.JComboBox<String> cbbTime;
     private com.toedter.calendar.JCalendar jCalendar;
     private javax.swing.JLabel jLabel1;
@@ -265,7 +308,8 @@ public class UserInputForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel lblAdd;
+    private javax.swing.JLabel lblDel;
+    private javax.swing.JLabel lblEdit;
     private assets.RoundedPanel roundedPanel1;
     private assets.RoundedPanel roundedPanel2;
     private assets.RoundedPanel roundedPanel3;

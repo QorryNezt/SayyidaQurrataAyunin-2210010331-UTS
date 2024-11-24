@@ -24,6 +24,9 @@ public class RoundedPanel extends JPanel implements Serializable {
     }
 
     public void setCornerRadius(int cornerRadius) {
+        RoundedPanel agendaPanel = new RoundedPanel(20); // Radius for rounded corners
+        agendaPanel.setLayout(new BorderLayout());      // Set layout separately
+
         this.cornerRadius = cornerRadius;
         repaint(); // Redraw the component when the corner radius changes
     }

@@ -1,6 +1,8 @@
 import assets.RoundedPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -13,22 +15,53 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-/**
- *
- * @author 
- */
+
 public class AgendaPribadiGUIForm extends javax.swing.JFrame {
 
-    /**
-     * Creates new form AgendaPribadiGUIForm
-     */
     public AgendaPribadiGUIForm() {
         initComponents();
         refreshAgendaList();
         updateDateAndDay();
         updateGreeting();
         bgDayNight();
+        
     }
+    private void openEditForm(String day, String month, String description, String time) {
+    EditForm inputForm = new EditForm(day, month, description, time); // Pass existing data
+    inputForm.setVisible(true);
+    this.dispose(); // Close the main form if needed
+    }
+    
+   private RoundedPanel createAgendaPanel(String day, String month, String description, String time) {
+    // Create a RoundedPanel with a radius of 20 and set its layout
+    RoundedPanel agendaPanel = new RoundedPanel(20);
+    agendaPanel.setLayout(new BorderLayout()); // Use BorderLayout for proper alignment
+    agendaPanel.setPreferredSize(new Dimension(230, 60));
+    agendaPanel.setBackground(Color.WHITE);
+    agendaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)); // Optional border
+
+    // West: Date (day and month)
+    RoundedPanel datePanel = new RoundedPanel(20); // Nested panel for the date
+    datePanel.setLayout(new GridLayout(2, 1));     // Two rows: Day and month
+    JLabel dayLabel = new JLabel(day, JLabel.CENTER);
+    JLabel monthLabel = new JLabel(month, JLabel.CENTER);
+    datePanel.add(dayLabel);
+    datePanel.add(monthLabel);
+
+    // Center: Agenda description
+    JLabel descriptionLabel = new JLabel(description, JLabel.CENTER);
+
+    // East: Time reminder
+    JLabel timeLabel = new JLabel(time, JLabel.CENTER);
+
+    // Add components to the agenda panel
+    agendaPanel.add(datePanel, BorderLayout.WEST);
+    agendaPanel.add(descriptionLabel, BorderLayout.CENTER);
+    agendaPanel.add(timeLabel, BorderLayout.EAST);
+
+    return agendaPanel;
+}
+    
    private void refreshAgendaList() {
     pnlAgendaList.removeAll(); // Clear the existing list
 
@@ -37,36 +70,23 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
          ResultSet rs = stmt.executeQuery("SELECT * FROM agenda")) {
 
         while (rs.next()) {
-            String date = rs.getString("date");
+            String day = rs.getString("day");         // Extract day from the database
+            String month = rs.getString("month");     // Extract month (short form)
             String description = rs.getString("description");
-            String time = rs.getString("time");
-            String ampm = rs.getString("ampm");
+            String time = rs.getString("time") + " " + rs.getString("ampm");
 
-            // Create a rounded panel for each agenda
-            RoundedPanel agendaPanel = new RoundedPanel(20); // Use your custom RoundedPanel class
-            agendaPanel.setLayout(new BorderLayout());
-            agendaPanel.setBackground(new Color(255, 255, 255, 200)); // Slightly transparent white
-            agendaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            // Create a new agenda panel
+            RoundedPanel agendaPanel = createAgendaPanel(day, month, description, time);
 
-            // Add content to the rounded panel
-            JLabel lblDayDate = new JLabel("<html><b>" + date + "</b></html>");
-            lblDayDate.setForeground(Color.DARK_GRAY);
-            lblDayDate.setHorizontalAlignment(JLabel.CENTER);
+            // Add click listener to open edit form
+            agendaPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    openEditForm(day, month, description, time); // Pass data to edit form
+                }
+            });
 
-            JLabel lblDesc = new JLabel("<html><i>" + description + "</i></html>");
-            lblDesc.setForeground(Color.BLACK);
-            lblDesc.setHorizontalAlignment(JLabel.CENTER);
-
-            JLabel lblTime = new JLabel(time + " " + ampm);
-            lblTime.setForeground(Color.GRAY);
-            lblTime.setHorizontalAlignment(JLabel.CENTER);
-
-            // Add labels to the agenda panel
-            agendaPanel.add(lblDayDate, BorderLayout.NORTH);
-            agendaPanel.add(lblDesc, BorderLayout.CENTER);
-            agendaPanel.add(lblTime, BorderLayout.SOUTH);
-
-            // Add agenda panel to the list
+            // Add the agenda panel to the list
             pnlAgendaList.add(agendaPanel);
         }
 
@@ -77,6 +97,7 @@ public class AgendaPribadiGUIForm extends javax.swing.JFrame {
         e.printStackTrace();
     }
 }
+
 private void updateGreeting() {
     LocalTime now = LocalTime.now();
     int hour = now.getHour();
@@ -132,14 +153,13 @@ private void bgDayNight() {
         icoClock2 = new javax.swing.JLabel();
         icoSearch = new javax.swing.JLabel();
         icoCalendar = new javax.swing.JLabel();
-        pnlAgendaList = new assets.RoundedPanel();
+        pnlAgendaList = new javax.swing.JPanel();
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(350, 480));
         setMinimumSize(new java.awt.Dimension(350, 480));
         setPreferredSize(new java.awt.Dimension(350, 480));
-        setResizable(false);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(350, 480));
         jPanel1.setLayout(null);
@@ -196,9 +216,10 @@ private void bgDayNight() {
         jPanel1.add(icoCalendar);
         icoCalendar.setBounds(300, 20, 30, 30);
 
-        pnlAgendaList.setLayout(new java.awt.GridBagLayout());
+        pnlAgendaList.setOpaque(false);
+        pnlAgendaList.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 10));
         jPanel1.add(pnlAgendaList);
-        pnlAgendaList.setBounds(10, 230, 330, 60);
+        pnlAgendaList.setBounds(0, 220, 350, 260);
 
         backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\3.png")); // NOI18N
         backgroundLabel.setMaximumSize(new java.awt.Dimension(350, 480));
@@ -266,6 +287,6 @@ private void bgDayNight() {
     private javax.swing.JLabel lblDatePlaceholder;
     private javax.swing.JLabel lblDay;
     private javax.swing.JLabel lblGreeting;
-    private assets.RoundedPanel pnlAgendaList;
+    private javax.swing.JPanel pnlAgendaList;
     // End of variables declaration//GEN-END:variables
 }
