@@ -241,7 +241,6 @@ private void bgDayNight() {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
         lblGreeting = new javax.swing.JLabel();
@@ -259,7 +258,6 @@ private void bgDayNight() {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(350, 480));
         setMinimumSize(new java.awt.Dimension(350, 480));
-        setPreferredSize(new java.awt.Dimension(350, 480));
 
         jPanel1.setPreferredSize(new java.awt.Dimension(350, 480));
         jPanel1.setLayout(null);
@@ -323,12 +321,11 @@ private void bgDayNight() {
         jPanel1.add(pnlAgendaList);
         pnlAgendaList.setBounds(0, 220, 350, 260);
 
-        backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\3.png")); // NOI18N
+        backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\night_bg.png")); // NOI18N
         backgroundLabel.setMaximumSize(new java.awt.Dimension(350, 480));
         backgroundLabel.setMinimumSize(new java.awt.Dimension(350, 480));
         jPanel1.add(backgroundLabel);
         backgroundLabel.setBounds(0, 0, 350, 480);
-        backgroundLabel.getAccessibleContext().setAccessibleName("");
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
