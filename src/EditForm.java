@@ -1,14 +1,26 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement; // Import PreparedStatement
-import java.sql.Statement;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
  *
- * @author 
+ * @author Sayyida Qurrata A'yunin (2210010331)
  */
 public class EditForm extends javax.swing.JFrame {
+    private String date;
+    private String time;
+    private String description;
+    private String ampm;
 
     /**
      * Creates new form AgendaPribadiGUIForm
@@ -18,77 +30,135 @@ public class EditForm extends javax.swing.JFrame {
      * @param ampm
      */
     public EditForm(String date, String description, String time, String ampm) {
-        java.sql.Date sqlDate = java.sql.Date.valueOf(date); // Ensure this uses yyyy-MM-dd   
+        this.date = date;
+        this.description = description;
+        this.time = time;
+        this.ampm = ampm;
         initComponents();
-    jCalendar.setDate(java.sql.Date.valueOf(date)); // Assuming you use JDateChooser
+        setInitialValues(); // Set the values to the input fields
+        
+    }
+    
+     private void setInitialValues() {
+    // If 'date' is a string, parse it to a Date object
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    try {
+        Date parsedDate = sdf.parse(date);
+        dateAgenda.setDate(parsedDate);  // Set the date to JDateChooser
+    } catch (ParseException e) {
+        e.printStackTrace();
+    }
+    
+    // Set the agenda description
     txtAgenda.setText(description);
-    txtTime.setText(time);
-    cbbTime.setSelectedItem(ampm);
-    
-    btnEdit.addActionListener(evt -> editAgenda(date)); // Pass the original date as identifier
-    btnDel.addActionListener(evt -> deleteAgenda(date)); // Pass the original date as identifier
+
+    // Set the time without AM/PM
+    txtTime.setText(time);  // Set time to txtTime without AM/PM
+
+    // Set AM/PM in the combo box
+    if ("PM".equals(ampm)) {
+        cbbTime.setSelectedItem("PM");  // Set PM in the combo box
+    } else {
+        cbbTime.setSelectedItem("AM");  // Set AM in the combo box
     }
-    
-    private void editAgenda(String originalDate) {
-        try (Connection conn = new DatabaseHelper().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(
-                 "UPDATE agenda SET date = ?, description = ?, time = ?, ampm = ? WHERE date = ?")) {
-
-            // Retrieve the date selected in JCalendar
-            java.util.Date selectedDate = jCalendar.getDate();
-            if (selectedDate == null) {
-                JOptionPane.showMessageDialog(this, "Please select a valid date.");
-                return;
-            }
-            java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
-
-            pstmt.setDate(1, sqlDate);
-            pstmt.setString(2, txtAgenda.getText());
-            pstmt.setString(3, txtTime.getText());
-            pstmt.setString(4, cbbTime.getSelectedItem().toString());
-            pstmt.setString(5, originalDate);
-
-            int rows = pstmt.executeUpdate();
-            if (rows > 0) {
-                JOptionPane.showMessageDialog(this, "Agenda updated successfully!");
-                redirectToMainForm(); // Go back to the main form
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed to update agenda.");
-        }
-    }
-
-    private void deleteAgenda(String originalDate) {
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this agenda?");
-        if (confirm == JOptionPane.YES_OPTION) {
-            try (Connection conn = new DatabaseHelper().getConnection();
-                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM agenda WHERE date = ?")) {
-
-                pstmt.setString(1, originalDate);
-
-                int rows = pstmt.executeUpdate();
-                if (rows > 0) {
-                    JOptionPane.showMessageDialog(this, "Agenda deleted successfully!");
-                    redirectToMainForm(); // Go back to the main form
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Failed to delete agenda.");
-            }
-        }
-    }
-
-    private void backMethod() {
-        AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
-        mainForm.setVisible(true);
-        this.dispose(); // Close the input form
-    }
-private void redirectToMainForm() {
-    AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
-    mainForm.setVisible(true);
-    this.dispose(); // Close the current form
 }
+private void updateAgenda(String newDate, String newTime, String newDescription, String newAmpm) {
+    String formattedTime = newTime.trim() + " " + newAmpm;  // Ensure the format is "HH:mm AM/PM"
+    File csvFile = new File("agenda.csv");
+    List<String> lines = new ArrayList<>();
+    boolean updated = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split(",");
+            if (data.length == 3) {  // Ensure there are three parts (date, time, description)
+                String storedDate = data[0].trim();
+                String storedTime = data[1].trim();
+
+                // If the current line matches the agenda to update, replace it
+                if (storedDate.equals(newDate.trim()) && storedTime.equals(formattedTime)) {
+                    String updatedLine = newDate + "," + formattedTime + "," + newDescription;
+                    lines.add(updatedLine);  // Add the updated agenda line
+                    updated = true;
+                } else {
+                    lines.add(line);  // Keep the existing line if it doesn't match
+                }
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    if (!updated) {
+        JOptionPane.showMessageDialog(this, "Agenda not found to update.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Write the updated lines back to the file
+    try (PrintWriter writer = new PrintWriter(new FileWriter(csvFile))) {
+        for (String line : lines) {
+            writer.println(line);
+        }
+        JOptionPane.showMessageDialog(this, "Agenda updated successfully!");
+        backToMain();  // Redirect to the main form after update
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Failed to update agenda.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+private void deleteAgenda() {
+    File csvFile = new File("agenda.csv");
+    List<String> lines = new ArrayList<>();
+    boolean deleted = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split(",");
+            if (data.length == 3) {  // Ensure there are three parts (date, time, description)
+                String storedDate = data[0].trim();
+                String storedTime = data[1].trim();
+
+                // If the current line matches the agenda to delete, remove it
+                if (!(storedDate.equals(date.trim()) && storedTime.equals(time.trim() + " " + ampm))) {
+                    lines.add(line);  // Keep the line if it doesn't match
+                } else {
+                    deleted = true; // Found the agenda to delete
+                }
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    if (!deleted) {
+        JOptionPane.showMessageDialog(this, "Agenda not found to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (PrintWriter writer = new PrintWriter(new FileWriter(csvFile))) {
+        for (String line : lines) {
+            writer.println(line);
+        }
+        JOptionPane.showMessageDialog(this, "Agenda deleted successfully!");
+        backToMain();
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Failed to delete agenda.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    private void backToMain() {
+        AgendaPribadiGUIForm agendaForm = new AgendaPribadiGUIForm();
+        agendaForm.setVisible(true);
+        dispose();  // Close current form
+    }
+
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -98,6 +168,7 @@ private void redirectToMainForm() {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
         btnBack = new assets.HeartButton();
@@ -112,7 +183,8 @@ private void redirectToMainForm() {
         txtTime = new javax.swing.JTextField();
         cbbTime = new javax.swing.JComboBox<>();
         roundedPanel1 = new assets.RoundedPanel();
-        jCalendar = new com.toedter.calendar.JCalendar();
+        jLabel6 = new javax.swing.JLabel();
+        dateAgenda = new com.toedter.calendar.JDateChooser();
         roundedPanel3 = new assets.RoundedPanel();
         jLabel5 = new javax.swing.JLabel();
         txtAgenda = new javax.swing.JTextField();
@@ -142,25 +214,35 @@ private void redirectToMainForm() {
         jLabel1.setFont(new java.awt.Font("Montserrat Medium", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 102, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Add Your Agenda Here!");
+        jLabel1.setText("Edit Your Agenda Here!");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(40, 70, 260, 23);
+        jLabel1.setBounds(40, 100, 260, 23);
 
         btnEdit.setText("");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnEdit);
-        btnEdit.setBounds(200, 380, 60, 50);
+        btnEdit.setBounds(200, 340, 60, 50);
 
         btnDel.setText("");
+        btnDel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDelActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnDel);
-        btnDel.setBounds(80, 380, 60, 50);
+        btnDel.setBounds(80, 340, 60, 50);
 
         lblEdit.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\edit.png")); // NOI18N
         jPanel1.add(lblEdit);
-        lblEdit.setBounds(220, 390, 40, 40);
+        lblEdit.setBounds(220, 350, 40, 40);
 
         lblDel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\trash.png")); // NOI18N
         jPanel1.add(lblDel);
-        lblDel.setBounds(80, 390, 60, 40);
+        lblDel.setBounds(80, 350, 60, 40);
 
         jLabel4.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
         jLabel4.setText("Enter Time :");
@@ -195,15 +277,19 @@ private void redirectToMainForm() {
         );
 
         jPanel1.add(roundedPanel2);
-        roundedPanel2.setBounds(20, 310, 310, 40);
+        roundedPanel2.setBounds(20, 260, 310, 40);
 
         roundedPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jCalendar.setFont(new java.awt.Font("Montserrat", 0, 10)); // NOI18N
-        roundedPanel1.add(jCalendar, new java.awt.GridBagConstraints());
+        jLabel6.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
+        jLabel6.setText("Enter Agenda Date:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 28, 0, 28);
+        roundedPanel1.add(jLabel6, gridBagConstraints);
+        roundedPanel1.add(dateAgenda, new java.awt.GridBagConstraints());
 
         jPanel1.add(roundedPanel1);
-        roundedPanel1.setBounds(20, 100, 310, 150);
+        roundedPanel1.setBounds(20, 160, 310, 40);
 
         jLabel5.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
         jLabel5.setText("Enter Agenda :");
@@ -232,7 +318,7 @@ private void redirectToMainForm() {
         );
 
         jPanel1.add(roundedPanel3);
-        roundedPanel3.setBounds(20, 260, 310, 40);
+        roundedPanel3.setBounds(20, 210, 310, 40);
 
         backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\2.png")); // NOI18N
         backgroundLabel.setMaximumSize(new java.awt.Dimension(340, 495));
@@ -247,8 +333,40 @@ private void redirectToMainForm() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        backMethod();
+        backToMain();
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelActionPerformed
+        deleteAgenda();
+    }//GEN-LAST:event_btnDelActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+   // Get the values from the input fields
+    String newDescription = txtAgenda.getText().trim();  // Description from the text field
+    String newTime = txtTime.getText().trim();           // Time from the text field
+    String newAmpm = (String) cbbTime.getSelectedItem(); // AM/PM from the combo box
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    String newDate = sdf.format(dateAgenda.getDate());   // Date from the JDateChooser
+
+    // Ensure the time includes the AM/PM part before updating
+    String formattedTime = newTime + " " + newAmpm; // Format time with AM/PM part
+
+    // Validate the time format
+    if (!newTime.matches("([01]?[0-9]|2[0-3]):([0-5][0-9])")) {
+        JOptionPane.showMessageDialog(this, "Invalid time format. Use HH:mm (e.g., 10:30).", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Validate if all fields are filled
+    if (newDescription.isEmpty() || newTime.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Update the agenda with the new values
+    updateAgenda(newDate, formattedTime, newDescription, newAmpm);
+
+    }//GEN-LAST:event_btnEditActionPerformed
 
     
     /**
@@ -293,11 +411,12 @@ private void redirectToMainForm() {
     private assets.HeartButton btnDel;
     private assets.HeartButton btnEdit;
     private javax.swing.JComboBox<String> cbbTime;
-    private com.toedter.calendar.JCalendar jCalendar;
+    private com.toedter.calendar.JDateChooser dateAgenda;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblDel;
     private javax.swing.JLabel lblEdit;

@@ -2,147 +2,201 @@ import assets.RoundedPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 /**
  *
- * @author 
+ * @author Sayyida Qurrata A'yunin (2210010331)
  */
 public class AgendaPribadiGUIForm extends javax.swing.JFrame {
-
+    private final String AGENDA_FILE = "agenda.csv";
     /**
      * Creates new form AgendaPribadiGUIForm
      */
     public AgendaPribadiGUIForm() {
+        createAgendaFileIfNotExists();
         initComponents();
-        refreshAgendaList();
+        loadAgendaPanels();
         updateDateAndDay();
         updateGreeting();
         bgDayNight();
         
+         
+        
+   }
+     private void createAgendaFileIfNotExists() {
+        try {
+            File file = new File(AGENDA_FILE);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-   private RoundedPanel createAgendaPanel(String day, String month, String description, String time) {
-    // Create a RoundedPanel with a radius of 20 and set its layout
+
+private void loadAgendaPanels() {
+    pnlAgendaList.removeAll(); // Clear existing panels
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH); // Adjust for dd/MM/yyyy format
+    try (BufferedReader reader = new BufferedReader(new FileReader(AGENDA_FILE))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",", -1); // Use -1 to keep empty values
+            if (parts.length < 3) { // Ensure there are at least 3 columns (date, time, description)
+                System.err.println("Skipping malformed row (not enough columns): " + line);
+                continue; // Skip invalid rows
+            }
+
+            String date = parts[0].trim();
+            String time = parts[1].trim();
+            String description = parts[2].trim();
+
+            try {
+                // Try to parse the date using SimpleDateFormat
+                dateFormat.setLenient(false); // Disable lenient parsing
+                dateFormat.parse(date); // Try to parse the date
+            } catch (ParseException e) {
+                // If parsing fails, log the error and skip the row
+                System.err.println("Skipping row with invalid date format: " + line);
+                continue;
+            }
+
+            // Create and add agenda panel
+            RoundedPanel agendaPanel = createAgendaPanel(date, time, description);
+            pnlAgendaList.add(agendaPanel);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error loading agenda data!", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    pnlAgendaList.revalidate(); // Refresh UI
+    pnlAgendaList.repaint();
+}
+
+private LocalDate parseDate(String dateStr) {
+    // Try parsing the date in a known format (e.g., dd MMMM yyyy)
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+    try {
+        return LocalDate.parse(dateStr, formatter);
+    } catch (Exception e) {
+        // If parsing fails, return null
+        return null;
+    }
+}
+private RoundedPanel createAgendaPanel(String date, String time, String description) {
+    // Create the panel
     RoundedPanel agendaPanel = new RoundedPanel(20);
-    agendaPanel.setLayout(new BorderLayout()); // Use BorderLayout for proper alignment
+    agendaPanel.setLayout(new BorderLayout());
     agendaPanel.setPreferredSize(new Dimension(230, 60));
     agendaPanel.setBackground(Color.WHITE);
-    agendaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)); // Optional border
+    agendaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
-    // West: Date (day and month)
-    RoundedPanel datePanel = new RoundedPanel(20); // Nested panel for the date
-    datePanel.setLayout(new GridLayout(2, 1));     // Two rows: Day and month
-    JLabel dayLabel = new JLabel(day, JLabel.CENTER);
-    JLabel monthLabel = new JLabel(month, JLabel.CENTER);
-    datePanel.add(dayLabel);
-    datePanel.add(monthLabel);
+    // Parse the date string and format it to display day and month
+    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM", Locale.ENGLISH);
 
-    // Center: Agenda description
-    JLabel descriptionLabel = new JLabel(description, JLabel.CENTER);
+    try {
+        java.util.Date parsedDate = inputFormat.parse(date);
+        String formattedDate = outputFormat.format(parsedDate);
 
-    // East: Time reminder
-    JLabel timeLabel = new JLabel(time, JLabel.CENTER);
+        String[] dateParts = formattedDate.split(" ");
+        String day = dateParts[0];
+        String month = dateParts[1];
 
-    // Add components to the agenda panel
-    agendaPanel.add(datePanel, BorderLayout.WEST);
-    agendaPanel.add(descriptionLabel, BorderLayout.CENTER);
-    agendaPanel.add(timeLabel, BorderLayout.EAST);
+        // Create date panel
+        RoundedPanel datePanel = new RoundedPanel(20);
+        datePanel.setLayout(new GridLayout(2, 1));
+        JLabel dayLabel = new JLabel(day, JLabel.CENTER);
+        dayLabel.setFont(new Font("Montserrat", Font.PLAIN, 14));
+        JLabel monthLabel = new JLabel(month, JLabel.CENTER);
+        monthLabel.setFont(new Font("Montserrat", Font.PLAIN, 14));
+        datePanel.add(dayLabel);
+        datePanel.add(monthLabel);
+
+        // Create description label
+        JLabel descriptionLabel = new JLabel(description, JLabel.CENTER);
+        descriptionLabel.setFont(new Font("Montserrat", Font.PLAIN, 12));
+
+        // Create time label
+        JLabel timeLabel = new JLabel(time, JLabel.CENTER);
+        timeLabel.setFont(new Font("Montserrat", Font.PLAIN, 14));
+
+        // Split time into hours and AM/PM
+        String[] timeParts = time.split(":");
+        String ampm = timeParts[1].endsWith("PM") ? "PM" : "AM";  // Extract AM/PM
+        String timeWithoutAMPM = time.split(" ")[0];  // Get time without AM/PM
+
+        // Add panel components
+        agendaPanel.add(datePanel, BorderLayout.WEST);
+        agendaPanel.add(descriptionLabel, BorderLayout.CENTER);
+        agendaPanel.add(timeLabel, BorderLayout.EAST);
+
+        // Add MouseListener for redirecting to the EditForm when clicked
+        agendaPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Open the EditForm and pass the necessary data
+                openEditForm(date, description, timeWithoutAMPM, ampm); // Pass time without AM/PM and AM/PM
+            }
+        });
+
+    } catch (ParseException e) {
+        System.err.println("Error parsing date: " + date);
+    }
 
     return agendaPanel;
 }
-    
-  private void refreshAgendaList() {
-    pnlAgendaList.removeAll(); // Clear the existing list
 
-    try (Connection conn = new DatabaseHelper().getConnection();
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery("SELECT * FROM agenda")) {
+    private void addAgendaPanel(String date, String time, String description, String ampm) {
+        RoundedPanel panel = new RoundedPanel();
+        panel.setBackground(new Color(255, 255, 255, 200));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        while (rs.next()) {
-            String date = rs.getString("date");
-            String description = rs.getString("description");
-            String time = rs.getString("time");
-            String ampm = rs.getString("ampm");
+        JLabel lblDate = new JLabel("Date: " + date);
+        JLabel lblTime = new JLabel("Time: " + time + " " + ampm);
+        JLabel lblDescription = new JLabel("Description: " + description);
 
-            // Create a rounded panel for each agenda
-            RoundedPanel agendaPanel = new RoundedPanel(20); // Use your custom RoundedPanel class
-            agendaPanel.setLayout(new BorderLayout());
-            agendaPanel.setBackground(new Color(255, 255, 255, 200)); // Slightly transparent white
-            agendaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        lblDate.setFont(new Font("Montserrat", Font.PLAIN, 12));
+        lblTime.setFont(new Font("Montserrat", Font.PLAIN, 12));
+        lblDescription.setFont(new Font("Montserrat", Font.PLAIN, 12));
 
-            // Add content to the rounded panel
-            JLabel lblDayDate = new JLabel("<html><b>" + date + "</b></html>");
-            lblDayDate.setForeground(Color.DARK_GRAY);
-            lblDayDate.setHorizontalAlignment(JLabel.CENTER);
+        panel.add(lblDate);
+        panel.add(lblTime);
+        panel.add(lblDescription);
 
-            JLabel lblDesc = new JLabel("<html><i>" + description + "</i></html>");
-            lblDesc.setForeground(Color.BLACK);
-            lblDesc.setHorizontalAlignment(JLabel.CENTER);
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openEditForm(date, description, time, ampm);
+            }
+        });
 
-            JLabel lblTime = new JLabel(time + " " + ampm);
-            lblTime.setForeground(Color.GRAY);
-            lblTime.setHorizontalAlignment(JLabel.CENTER);
-
-            // Add labels to the agenda panel
-            agendaPanel.add(lblDayDate, BorderLayout.NORTH);
-            agendaPanel.add(lblDesc, BorderLayout.CENTER);
-            agendaPanel.add(lblTime, BorderLayout.SOUTH);
-
-            // Add MouseListener to handle click events
-            agendaPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mouseClicked(java.awt.event.MouseEvent evt) {
-                    openEditForm(date, description, time, ampm); // Open the EditForm with agenda details
-                }
-
-                @Override
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    agendaPanel.setBackground(new Color(230, 230, 230)); // Optional: Highlight on hover
-                }
-
-                @Override
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    agendaPanel.setBackground(new Color(255, 255, 255, 200)); // Reset background on exit
-                }
-            });
-
-            // Add agenda panel to the list
-            pnlAgendaList.add(agendaPanel);
-        }
-
-        pnlAgendaList.revalidate();
-        pnlAgendaList.repaint();
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        pnlAgendaList.add(panel);
     }
-}
-   // Method to open EditForm with agenda data
+
     private void openEditForm(String date, String description, String time, String ampm) {
-    try {
-        // Convert date to the required format
-        LocalDate parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy")); // Adjust pattern to match your database format
-        String formattedDate = parsedDate.toString(); // Convert to yyyy-MM-dd
-
-        // Pass formattedDate to the EditForm
-        EditForm editForm = new EditForm(formattedDate, description, time, ampm);
+        EditForm editForm = new EditForm(date, description, time, ampm);
         editForm.setVisible(true);
-        this.dispose(); // Close the main form
-    } catch (Exception e) {
-        e.printStackTrace(); // Log the error for debugging
+        this.dispose();
     }
-}
 private void updateGreeting() {
     LocalTime now = LocalTime.now();
     int hour = now.getHour();
@@ -199,6 +253,7 @@ private void bgDayNight() {
         icoSearch = new javax.swing.JLabel();
         icoCalendar = new javax.swing.JLabel();
         pnlAgendaList = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -263,6 +318,8 @@ private void bgDayNight() {
 
         pnlAgendaList.setOpaque(false);
         pnlAgendaList.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 10));
+        pnlAgendaList.add(jScrollPane1);
+
         jPanel1.add(pnlAgendaList);
         pnlAgendaList.setBounds(0, 220, 350, 260);
 
@@ -329,6 +386,7 @@ private void bgDayNight() {
     private javax.swing.JLabel icoLock;
     private javax.swing.JLabel icoSearch;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblDatePlaceholder;
     private javax.swing.JLabel lblDay;
     private javax.swing.JLabel lblGreeting;

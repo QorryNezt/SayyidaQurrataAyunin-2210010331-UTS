@@ -1,0 +1,47 @@
+private RoundedPanel createAgendaPanel(String date, String time, String description) {
+    // Create a RoundedPanel with a radius of 20 and set its layout
+    RoundedPanel agendaPanel = new RoundedPanel(20);
+    agendaPanel.setLayout(new BorderLayout()); // Use BorderLayout for proper alignment
+    agendaPanel.setPreferredSize(new Dimension(230, 60));
+    agendaPanel.setBackground(Color.WHITE);
+    agendaPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)); // Optional border
+
+    // Parse the date string and format it to display only day and month
+    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM", Locale.ENGLISH); // Format for display (e.g., 12 Nov)
+
+    try {
+        // Attempt to parse the date
+        java.util.Date parsedDate = inputFormat.parse(date);
+        String formattedDate = outputFormat.format(parsedDate);
+
+        // Extract day and month
+        String[] dateParts = formattedDate.split(" ");
+        String day = dateParts[0];
+        String month = dateParts[1];
+
+        // West: Date (day and month)
+        RoundedPanel datePanel = new RoundedPanel(20); // Nested panel for the date
+        datePanel.setLayout(new GridLayout(2, 1));     // Two rows: Day and month
+        JLabel dayLabel = new JLabel(day, JLabel.CENTER);
+        JLabel monthLabel = new JLabel(month, JLabel.CENTER);
+        datePanel.add(dayLabel);
+        datePanel.add(monthLabel);
+
+        // Center: Agenda description
+        JLabel descriptionLabel = new JLabel(description, JLabel.CENTER);
+
+        // East: Time reminder
+        JLabel timeLabel = new JLabel(time, JLabel.CENTER);
+
+        // Add components to the agenda panel
+        agendaPanel.add(datePanel, BorderLayout.WEST);
+        agendaPanel.add(descriptionLabel, BorderLayout.CENTER);
+        agendaPanel.add(timeLabel, BorderLayout.EAST);
+
+    } catch (ParseException e) {
+        System.err.println("Error parsing date: " + date);
+    }
+
+    return agendaPanel;
+}

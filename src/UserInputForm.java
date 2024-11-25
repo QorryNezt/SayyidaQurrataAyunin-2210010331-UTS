@@ -1,10 +1,12 @@
-import java.sql.Connection;
-import java.sql.Statement;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 
 /**
  *
- * @author 
+ * @author Sayyida Qurrata A'yunin (2210010331)
  */
 public class UserInputForm extends javax.swing.JFrame {
 
@@ -16,13 +18,57 @@ public class UserInputForm extends javax.swing.JFrame {
        
     }
     
-    private void backMethod(){
+    // Method to return to the main form
+    private void backMethod() {
     AgendaPribadiGUIForm mainForm = new AgendaPribadiGUIForm();
     mainForm.setVisible(true);
     this.dispose(); // Close the input form
     }
 
+  private boolean isValidTime(String timeInput) {
+    // Check if the input matches the 12-hour format pattern (1-12:00-59)
+    String regex = "^(0?[1-9]|1[0-2]):([0-5][0-9])$";
+    return timeInput.matches(regex);
+}  
+private void addAgenda() {
+     String agendaTime = txtTime.getText().trim();
+    
+    if (!isValidTime(agendaTime)) {
+        JOptionPane.showMessageDialog(this, "Invalid time format. Please enter time in 12-hour format (e.g., 02:30).", "Error", JOptionPane.ERROR_MESSAGE);
+        return;  // Prevents further action if time is invalid
+    }
+ // Get user inputs
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // Format for the date
+    String date = sdf.format(dateAgenda.getDate()); // Get formatted date
+    String time = txtTime.getText();
+    String ampm = cbbTime.getSelectedItem().toString();
+    String description = txtAgenda.getText();
+    String agendaDate = date.trim();
+    String agendaDescription = txtAgenda.getText().trim();
+    
+    // Check if other fields are empty
+    if (agendaDate.isEmpty() || agendaDescription.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
+    // Construct the line to write to the file
+    String agendaLine = date + "," + time + " " + ampm + "," + description;
+
+    try (PrintWriter writer = new PrintWriter(new FileWriter("agenda.csv", true))) {
+        writer.println(agendaLine); // Write the line
+        JOptionPane.showMessageDialog(this, "Agenda added successfully!");
+
+        // Reset fields after saving
+        txtTime.setText("");
+        txtAgenda.setText("");
+        cbbTime.setSelectedIndex(0); // Reset AM/PM combo box
+        dateAgenda.setDate(new java.util.Date()); // Reset calendar to today's date
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Failed to save agenda.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -39,12 +85,13 @@ public class UserInputForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btnAdd = new assets.HeartButton();
         lblAdd = new javax.swing.JLabel();
+        roundedPanel1 = new assets.RoundedPanel();
+        jLabel6 = new javax.swing.JLabel();
+        dateAgenda = new com.toedter.calendar.JDateChooser();
         roundedPanel2 = new assets.RoundedPanel();
         jLabel4 = new javax.swing.JLabel();
         txtTime = new javax.swing.JTextField();
         cbbTime = new javax.swing.JComboBox<>();
-        roundedPanel1 = new assets.RoundedPanel();
-        jCalendar = new com.toedter.calendar.JCalendar();
         roundedPanel3 = new assets.RoundedPanel();
         jLabel5 = new javax.swing.JLabel();
         txtAgenda = new javax.swing.JTextField();
@@ -77,7 +124,7 @@ public class UserInputForm extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Add Your Agenda Here!");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(40, 70, 260, 23);
+        jLabel1.setBounds(40, 100, 260, 23);
 
         btnAdd.setText("");
         btnAdd.setFont(new java.awt.Font("Montserrat SemiBold", 0, 24)); // NOI18N
@@ -87,17 +134,34 @@ public class UserInputForm extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnAdd);
-        btnAdd.setBounds(150, 370, 60, 50);
+        btnAdd.setBounds(140, 320, 60, 50);
 
         lblAdd.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblAdd.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\icons\\add.png")); // NOI18N
         jPanel1.add(lblAdd);
-        lblAdd.setBounds(160, 380, 40, 40);
+        lblAdd.setBounds(150, 330, 40, 40);
+
+        roundedPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel6.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
+        jLabel6.setText("Enter Agenda Date:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 28, 0, 28);
+        roundedPanel1.add(jLabel6, gridBagConstraints);
+        roundedPanel1.add(dateAgenda, new java.awt.GridBagConstraints());
+
+        jPanel1.add(roundedPanel1);
+        roundedPanel1.setBounds(20, 150, 310, 40);
 
         jLabel4.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
         jLabel4.setText("Enter Time :");
 
         txtTime.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
+        txtTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTimeActionPerformed(evt);
+            }
+        });
 
         cbbTime.setFont(new java.awt.Font("Montserrat", 0, 12)); // NOI18N
         cbbTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AM", "PM" }));
@@ -127,15 +191,7 @@ public class UserInputForm extends javax.swing.JFrame {
         );
 
         jPanel1.add(roundedPanel2);
-        roundedPanel2.setBounds(20, 310, 310, 40);
-
-        roundedPanel1.setLayout(new java.awt.GridBagLayout());
-
-        jCalendar.setFont(new java.awt.Font("Montserrat", 0, 10)); // NOI18N
-        roundedPanel1.add(jCalendar, new java.awt.GridBagConstraints());
-
-        jPanel1.add(roundedPanel1);
-        roundedPanel1.setBounds(20, 100, 310, 150);
+        roundedPanel2.setBounds(20, 250, 310, 40);
 
         jLabel5.setFont(new java.awt.Font("Montserrat Medium", 0, 14)); // NOI18N
         jLabel5.setText("Enter Agenda :");
@@ -164,7 +220,7 @@ public class UserInputForm extends javax.swing.JFrame {
         );
 
         jPanel1.add(roundedPanel3);
-        roundedPanel3.setBounds(20, 260, 310, 40);
+        roundedPanel3.setBounds(20, 200, 310, 40);
 
         backgroundLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\Asus\\Documents\\NetBeansProjects\\AplikasiAgendaPribadi\\assets\\2.png")); // NOI18N
         backgroundLabel.setMaximumSize(new java.awt.Dimension(340, 495));
@@ -183,39 +239,12 @@ public class UserInputForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-    // Get user input
-    String date = jCalendar.getDate().toString(); // Assuming you're using JCalendar
-    String description = txtAgenda.getText();
-    String time = txtTime.getText();
-    String ampm = cbbTime.getSelectedItem().toString();
-
-    // Validate input
-    if (date.isEmpty() || description.isEmpty() || time.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "All fields must be filled!", "Warning", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Insert into database
-    try (Connection conn = new DatabaseHelper().getConnection();
-         Statement stmt = conn.createStatement()) {
-
-        String insertSQL = "INSERT INTO agenda (date, description, time, ampm) VALUES ('"
-                + date + "', '"
-                + description + "', '"
-                + time + "', '"
-                + ampm + "');";
-        stmt.executeUpdate(insertSQL);
-        JOptionPane.showMessageDialog(this, "Agenda added successfully!");
-
-        // Kembali ke halaman main
-        backMethod();
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Failed to add agenda!", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
+    addAgenda();
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void txtTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTimeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtTimeActionPerformed
 
     
     /**
@@ -259,11 +288,12 @@ public class UserInputForm extends javax.swing.JFrame {
     private assets.HeartButton btnAdd;
     private assets.HeartButton btnBack;
     private javax.swing.JComboBox<String> cbbTime;
-    private com.toedter.calendar.JCalendar jCalendar;
+    private com.toedter.calendar.JDateChooser dateAgenda;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblAdd;
     private assets.RoundedPanel roundedPanel1;
