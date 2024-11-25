@@ -62,8 +62,7 @@ public class EditForm extends javax.swing.JFrame {
         cbbTime.setSelectedItem("AM");  // Set AM in the combo box
     }
 }
-private void updateAgenda(String newDate, String newTime, String newDescription, String newAmpm) {
-    String formattedTime = newTime.trim() + " " + newAmpm;  // Ensure the format is "HH:mm AM/PM"
+private void updateAgenda(String newDate, String formattedTime, String newDescription, String newAmpm) {
     File csvFile = new File("agenda.csv");
     List<String> lines = new ArrayList<>();
     boolean updated = false;
@@ -76,8 +75,12 @@ private void updateAgenda(String newDate, String newTime, String newDescription,
                 String storedDate = data[0].trim();
                 String storedTime = data[1].trim();
 
+                // Debugging output for tracking the comparison
+                System.out.println("Comparing: storedDate = " + storedDate + ", newDate = " + newDate);
+                System.out.println("Comparing: storedTime = " + storedTime + ", formattedTime = " + formattedTime);
+
                 // If the current line matches the agenda to update, replace it
-                if (storedDate.equals(newDate.trim()) && storedTime.equals(formattedTime)) {
+                if (storedDate.equals(newDate.trim()) && storedTime.equals(formattedTime.trim())) {
                     String updatedLine = newDate + "," + formattedTime + "," + newDescription;
                     lines.add(updatedLine);  // Add the updated agenda line
                     updated = true;
@@ -107,6 +110,8 @@ private void updateAgenda(String newDate, String newTime, String newDescription,
         JOptionPane.showMessageDialog(this, "Failed to update agenda.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
+
 
 
 private void deleteAgenda() {
@@ -349,11 +354,16 @@ private void deleteAgenda() {
     String newDate = sdf.format(dateAgenda.getDate());   // Date from the JDateChooser
 
     // Ensure the time includes the AM/PM part before updating
-    String formattedTime = newTime + " " + newAmpm; // Format time with AM/PM part
+    String formattedTime;
+    if (newTime.toUpperCase().endsWith("AM") || newTime.toUpperCase().endsWith("PM")) {
+        formattedTime = newTime; // Avoid appending AM/PM again
+    } else {
+        formattedTime = newTime + " " + newAmpm;
+    }
 
-    // Validate the time format
-    if (!newTime.matches("([01]?[0-9]|2[0-3]):([0-5][0-9])")) {
-        JOptionPane.showMessageDialog(this, "Invalid time format. Use HH:mm (e.g., 10:30).", "Warning", JOptionPane.WARNING_MESSAGE);
+    // Validate the time format (including optional AM/PM for user safety)
+    if (!formattedTime.matches("([01]?[0-9]|2[0-3]):([0-5][0-9])\\s*(AM|PM)?")) {
+        JOptionPane.showMessageDialog(this, "Invalid time format. Use HH:mm (e.g., 10:30 AM).", "Warning", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
@@ -365,7 +375,6 @@ private void deleteAgenda() {
 
     // Update the agenda with the new values
     updateAgenda(newDate, formattedTime, newDescription, newAmpm);
-
     }//GEN-LAST:event_btnEditActionPerformed
 
     
