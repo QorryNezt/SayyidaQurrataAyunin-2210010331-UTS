@@ -12,5 +12,14 @@
 2. JCalendar
 
 ### 🎞Demo Video🎞<br>
-[**📺Click Here📺**](https://youtu.be/KYDb_q8KWx0)<br>
+[**📺Click Here📺**](https://youtu.be/KYDb_q8KWx0)<br><br>
 ----
+### 📷Sample Pictures:📷
+1. Day Interface Look:<br><br>
+![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/day.png?raw=true)<br><br>
+2. Night Look (Design View on Netbeans)<br><br>
+![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/night.png?raw=true)<br><br>
+3. Add Form Interface:<br><br>
+![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/add.png?raw=true)<br><br>
+4. Add Form Interface:<br><br>
+![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/edit.png?raw=true)<br><br>
