@@ -21,5 +21,5 @@
 ![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/night.png?raw=true)<br><br>
 3. Add Form Interface:<br><br>
 ![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/add.png?raw=true)<br><br>
-4. Add Form Interface:<br><br>
+4. Edit Form Interface:<br><br>
 ![App Screenshot](https://github.com/QorryNezt/SayyidaQurrataAyunin-2210010331-UTS/blob/main/sample%20pics/edit.png?raw=true)<br><br>
